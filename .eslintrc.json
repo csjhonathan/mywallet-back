@@ -26,6 +26,13 @@
         "semi": [
             "error",
             "always"
+        ],
+        "space-in-parens": [
+            "error", 
+            "always"
+        ],
+        "no-unused-vars" : [
+            "off"
         ]
     }
 }
