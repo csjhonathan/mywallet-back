@@ -98,9 +98,9 @@ export async function editTransactionByID( req, res ){
     const {authorization} = req.headers;
     const token = authorization?.split( ' ' )[1];
     const { ID } = req.params;
-    const {value, description} = req.body;
+    const {value, description, type} = req.body;
 
-    const {error} = transactionScheme.validate( {value, description} );
+    const {error} = transactionScheme.validate( {value, description, type} );
 
     if( !token ){
         return res.status( 401 ).send( {message : 'Não autorizado!'} );
