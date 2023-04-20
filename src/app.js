@@ -92,7 +92,7 @@ app.get( '/transactions', async( req, res ) => {
     const token = authorization?.split( ' ' )[1];
     
     if( !token ){
-        return res.status( 401 ).send( {message : 'Token inválido ou não existe!'} );
+        return res.status( 401 ).send( {message : 'Não autorizado!'} );
     }
 
     try{
@@ -113,11 +113,11 @@ app.post( '/transactions', async( req, res ) =>{
     const {error} = transactionScheme.validate( {value, type, description} );
 
     if( !token ){
-        return res.status( 401 ).send( {message : 'Token inválido ou não existe!'} );
+        return res.status( 401 ).send( {message : 'Não autorizado!'} );
     }
 
     if( error ){
-        return res.status( 422 ).send( error.details.map( er => er.message ) );
+        return res.status( 422 ).send( {message : error.details.map( er => er.message )} );
     }
 
     try{
@@ -126,7 +126,7 @@ app.post( '/transactions', async( req, res ) =>{
     
         const transaction = {
             transactionID : nanoid(),
-            value : value , 
+            value : type === 'deposit' ? value : -value , 
             type, 
             description,
             date : dayjs().format( 'DD/MM' )
@@ -142,7 +142,7 @@ app.post( '/transactions', async( req, res ) =>{
         userTransactions.transactions.push( transaction );
 
         const total = userTransactions.transactions.reduce( ( acc, trans ) => {
-            return acc+= trans.type === 'spent' ? - Number( trans.value ) : Number( trans.value );
+            return acc+= trans.value ;
         }, 0 );
 
         await db.collection( 'transactions' ).updateOne( {userID : userSession.userID} , {$set : {transactions : userTransactions.transactions, total }} );
@@ -153,6 +153,35 @@ app.post( '/transactions', async( req, res ) =>{
     }catch( err ){
         res.status( 500 ).send( {message : err.message} );
     }   
+} );
+
+app.delete( '/transactions/:ID', async( req, res ) =>{
+    const {authorization} = req.headers;
+    const token = authorization?.split( ' ' )[1];
+    const { ID } = req.params;
+    
+    if( !token ){
+        return res.status( 401 ).send( {message : 'Não autorizado!'} );
+    }
+    try{
+        const userSession = await db.collection( 'sessions' ).findOne( {token} );
+
+        
+        const userTransactions  = await db.collection( 'transactions' ).findOne( {userID : userSession.userID} );
+        
+        const transaction = userTransactions.transactions.find( ( {transactionID} ) => transactionID===ID );
+        console.log( transaction.value );
+        await db.collection( 'transactions' ).updateOne(
+            {userID : userSession.userID},
+            { $pull: { transactions: { transactionID: ID } },
+                $inc: { total: -parseFloat( transaction.value ) } }
+        );
+        
+        res.status( 202 ).send( 'Transação deletada!' );
+    }catch( err ){
+        res.status( 500 ).send( {message : err.message} );
+    }
+    
 } );
 
 export default app;
