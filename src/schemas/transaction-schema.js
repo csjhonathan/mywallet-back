@@ -6,7 +6,7 @@ const transactionScheme = Joi.object( {
         .required(),
     type : Joi
         .string()
-        .required()
+        .optional()
         .valid( 'spent', 'deposit' ),
     description: Joi
         .string()

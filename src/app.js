@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { signIn, signUp } from './controllers/authControllers.js';
-import { getTransactions, postTransactions, deleteTransactionByID } from './controllers/transactionsControllers.js';
+import { getTransactions, postTransactions, deleteTransactionByID, editTransactionByID } from './controllers/transactionsControllers.js';
 
 dotenv.config();
 export const app = express();
@@ -35,3 +35,5 @@ app.get( '/transactions', getTransactions );
 app.post( '/transactions', postTransactions );
 
 app.delete( '/transactions/:ID', deleteTransactionByID );
+
+app.put( '/transactions/:ID', editTransactionByID );
