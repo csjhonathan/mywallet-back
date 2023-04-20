@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import PORT from './constants/port.js';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -18,7 +17,7 @@ app
     .use( cors() )
     .use( express.json() );
 
-const mongoClient = new MongoClient( process.env.DATABASE_URL );
+const mongoClient = new MongoClient( process.env.MONGO_URI );
 
 try{
     await mongoClient.connect();
@@ -155,6 +154,5 @@ app.post( '/transactions', async( req, res ) =>{
         res.status( 500 ).send( {message : err.message} );
     }   
 } );
-app.listen( PORT, () => {
-    console.log( `Server is running on ${chalk.green( `http://localhost:${PORT}` )}` );
-} );
+
+export default app;
