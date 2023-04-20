@@ -9,7 +9,8 @@ import signInScheme from './schemas/sign-in-schema.js';
 import transactionScheme from './schemas/transaction-schema.js';
 import bcrypt from 'bcrypt';
 import dayjs from 'dayjs';
-import { v4 as uuid, validate } from 'uuid';
+import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 dotenv.config();
 const app = express();
 
@@ -99,7 +100,7 @@ app.get( '/transactions', async( req, res ) => {
         const userSession = await db.collection( 'sessions' ).findOne( {token} );
         const userTransactions  = await db.collection( 'transactions' ).findOne( {userID : userSession.userID} );
 
-        res.status( 200 ).send( {total : userTransactions?.total, transactions : userTransactions?.transactions} );
+        res.status( 200 ).send( {total : userTransactions?.total, transactions : userTransactions?.transactions.reverse()} );
     }catch( err ){
         res.status( 500 ).send( {message : err.message} );
     }
@@ -125,6 +126,7 @@ app.post( '/transactions', async( req, res ) =>{
         const userTransactions  = await db.collection( 'transactions' ).findOne( {userID : userSession.userID} );
     
         const transaction = {
+            transactionID : nanoid(),
             value : value , 
             type, 
             description,
