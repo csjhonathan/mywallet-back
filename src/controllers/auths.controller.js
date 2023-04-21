@@ -1,7 +1,7 @@
-import { db } from '../app.js';
+import { db } from '../database/database.connection.js';
 import { v4 as uuid } from 'uuid';
-import signInScheme from '../schemas/sign-in-schema.js';
-import signUpScheme from '../schemas/sign-up-schema.js';
+import signInScheme from '../schemas/sign-in.schema.js';
+import signUpScheme from '../schemas/sign-up.schema.js';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 
