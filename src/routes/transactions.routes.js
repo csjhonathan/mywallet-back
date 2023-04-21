@@ -6,15 +6,15 @@ import authValidation from '../middlewares/auth.middleware.js';
 
 const transactionsRouter = Router();
 
-transactionsRouter
-    .use( authValidation );
-
-transactionsRouter.get( '/transactions', getTransactions );
+transactionsRouter.use( authValidation );
 
 transactionsRouter.post( '/transactions', validateSchema( transactionScheme ) ,postTransactions );
 
+transactionsRouter.put( '/transactions/:ID', validateSchema( transactionScheme ), editTransactionByID );
+
+transactionsRouter.get( '/transactions', getTransactions );
+
 transactionsRouter.delete( '/transactions/:ID', deleteTransactionByID );
 
-transactionsRouter.put( '/transactions/:ID', validateSchema( transactionScheme ), editTransactionByID );
 
 export default transactionsRouter;

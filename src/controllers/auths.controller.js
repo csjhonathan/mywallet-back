@@ -1,7 +1,5 @@
 import { db } from '../database/database.connection.js';
 import { v4 as uuid } from 'uuid';
-import signInScheme from '../schemas/sign-in.schema.js';
-import signUpScheme from '../schemas/sign-up.schema.js';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 
@@ -9,7 +7,6 @@ import { ObjectId } from 'mongodb';
 export async function signUp( req, res ){
 
     const { nome , email , senha } = req.body;
-
     try{
         const user = await db.collection( 'users' ).findOne( {email} );
         if( user ){
@@ -24,10 +21,13 @@ export async function signUp( req, res ){
 }
 
 export async function signIn( req, res ) {
+    
     const {email, senha} = req.body;
-   
+    
     try{
+
         const user = await db.collection( 'users' ).findOne( {email} );
+
         if( !user ) {
             return res.status( 404 ).send( {message : 'Usuário não cadastrado!'} );
         }
@@ -45,7 +45,6 @@ export async function signIn( req, res ) {
         } );
 
         delete user.senha;
-
         res.status( 200 ).send( {...user, token} );
     }catch( err ){
         res.status( 500 ).send( err.message );

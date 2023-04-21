@@ -6,6 +6,6 @@ export default function validateSchema( schema ){
             return res.status( 422 ).send( {message : error.details.map( er => er.message )} );
         }
 
-        return next();
+        next();
     };
 }

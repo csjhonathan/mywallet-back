@@ -16,8 +16,9 @@ export async function postTransactions( req, res ){
     
     const { value, type, description } = req.body;
     const { userSession, userTransactions } = res.locals;
-
+    
     try{
+
         const transaction = {
             transactionID : nanoid(),
             value : type === 'deposit' ? value : -value , 
@@ -29,7 +30,6 @@ export async function postTransactions( req, res ){
         if( !userTransactions ){
             await db.collection( 'transactions' ).insertOne( {userID : userSession.userID, transactions : [transaction], total : transaction.value} ); 
             return res.sendStatus( 200 ); 
-
         }
 
         userTransactions.transactions.push( transaction );
@@ -39,8 +39,6 @@ export async function postTransactions( req, res ){
         }, 0 );
 
         await db.collection( 'transactions' ).updateOne( {userID : userSession.userID} , {$set : {transactions : userTransactions.transactions, total }} );
-
-
         res.sendStatus( 200 );
     }catch( err ){
         res.status( 500 ).send( {message : err.message} );

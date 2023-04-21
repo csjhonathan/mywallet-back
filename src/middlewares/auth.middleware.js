@@ -1,6 +1,7 @@
 import { db } from '../database/database.connection.js';
 
 export default async function authValidation ( req, res, next ){
+
     const {authorization} = req.headers;
     const token = authorization?.split( ' ' )[1];
 
@@ -19,9 +20,9 @@ export default async function authValidation ( req, res, next ){
         const userTransactions  = await db.collection( 'transactions' ).findOne( {userID : userSession.userID} );
         res.locals.userSession = userSession;
         res.locals.userTransactions = userTransactions;
-        next();
-
     }catch( err ){
         res.status( 500 ).send( { message : err.message } );
     }
+
+    next();
 }
