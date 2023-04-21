@@ -3,7 +3,8 @@ import Joi from 'joi';
 const transactionScheme = Joi.object( {
     value : Joi
         .number()
-        .required(),
+        .required()
+        .greater( 0 ),
     type : Joi
         .string()
         .required()
