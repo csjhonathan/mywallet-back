@@ -9,11 +9,6 @@ import { ObjectId } from 'mongodb';
 export async function signUp( req, res ){
 
     const { nome , email , senha } = req.body;
-    const {error} = signUpScheme.validate( {nome, email , senha}, {abortEarly : false} );
-
-    if( error ){
-        return res.status( 422 ).send( error.details.map( er => er.message ) );
-    }
 
     try{
         const user = await db.collection( 'users' ).findOne( {email} );
@@ -30,12 +25,7 @@ export async function signUp( req, res ){
 
 export async function signIn( req, res ) {
     const {email, senha} = req.body;
-    const {error} = signInScheme.validate( {email, senha}, {abortEarly : false} );
-
-    if( error ){
-        return res.status( 422 ).send( {message : error.details.map( er => er.message )} );
-    }
-
+   
     try{
         const user = await db.collection( 'users' ).findOne( {email} );
         if( !user ) {
