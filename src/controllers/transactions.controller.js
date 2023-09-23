@@ -1,7 +1,6 @@
-import { db } from '../database/database.connection.js';
 import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
-
+import { transactions } from './collections.js';
 export async function getTransactions( req, res ) {
     const { userTransactions } = res.locals;
 
@@ -28,7 +27,7 @@ export async function postTransactions( req, res ){
         };
 
         if( !userTransactions ){
-            await db.collection( 'transactions' ).insertOne( {userID : userSession.userID, transactions : [transaction], total : transaction.value} ); 
+            await transactions.insertOne( {userID : userSession.userID, transactions : [transaction], total : transaction.value} ); 
             return res.sendStatus( 200 ); 
         }
 
@@ -38,7 +37,7 @@ export async function postTransactions( req, res ){
             return acc+= trans.value ;
         }, 0 );
 
-        await db.collection( 'transactions' ).updateOne( {userID : userSession.userID} , {$set : {transactions : userTransactions.transactions, total }} );
+        await transactions.updateOne( {userID : userSession.userID} , {$set : {transactions : userTransactions.transactions, total }} );
         res.sendStatus( 200 );
     }catch( err ){
         res.status( 500 ).send( {message : err.message} );
@@ -53,7 +52,7 @@ export async function deleteTransactionByID( req, res ) {
     try{
         const transaction = userTransactions.transactions.find( ( {transactionID} ) => transactionID===ID );
 
-        await db.collection( 'transactions' ).updateOne(
+        await transactions.updateOne(
             {userID : userSession.userID},
             { $pull: { transactions: { transactionID: ID } },
                 $inc: { total: -parseFloat( transaction.value ) } }
@@ -84,7 +83,7 @@ export async function editTransactionByID( req, res ){
             return acc+= trans.value ;
         }, 0 );
 
-        await db.collection( 'transactions' ).updateOne( {userID : userSession.userID} , {$set : {transactions : editedTransactions, total }} );
+        await transactions.updateOne( {userID : userSession.userID} , {$set : {transactions : editedTransactions, total }} );
         res.sendStatus( 200 );
 
     }catch( err ){

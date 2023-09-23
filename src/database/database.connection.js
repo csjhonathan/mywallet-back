@@ -10,6 +10,7 @@ try{
     await mongoClient.connect();
     console.log( chalk.blue( 'DB CONNECTION SUCCESSFULLY' ) );
 }catch( err ){
+    console.log( err );
     console.log( err.message, chalk.red( 'DB CONNECTION FAILED' ) );
 }
 
