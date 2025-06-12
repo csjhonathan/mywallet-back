@@ -72,7 +72,8 @@ export async function editTransactionByID( req, res ){
             if( trans.transactionID === ID ){
                 return{
                     ...trans,
-                    value : trans.type === 'deposit' ? req.body.value : -req.body.value,
+                    type: req.body.type,
+                    value : req.body.type === 'deposit' ? req.body.value : -req.body.value,
                     description : req.body.description
                 };
             }
